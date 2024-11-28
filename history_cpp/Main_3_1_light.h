@@ -18,7 +18,7 @@ float lastFrame = 0.0f; // 上一帧的时间
 
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = SCR_WIDTH*0.5, lastY = SCR_HEIGHT*0.5;
+float lastX = SCR_WIDTH * 0.5, lastY = SCR_HEIGHT * 0.5;
 bool firstMouse = true;
 
 // lighting

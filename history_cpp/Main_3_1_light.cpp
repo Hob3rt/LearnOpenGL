@@ -35,7 +35,7 @@ int main()
     Shader shader_boxes("shaders/shader1.vtshader", "shaders/shader1.fshader");
     Shader shader_lightbox("shaders/box.vs", "shaders/box.fs");
     Shader shader_light("shaders/box.vs", "shaders/light.fs");
-   //
+    //
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -129,7 +129,7 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(texturedata);
-    shader_boxes.use(); 
+    shader_boxes.use();
     shader_boxes.setInt("texture1", 0);
     shader_boxes.setInt("texture2", 1);
 
