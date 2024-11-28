@@ -1,4 +1,6 @@
 #include "Main.h"
+
+
 int main()
 {
     glfwInit();
@@ -16,10 +18,10 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
-
-    //设置窗口尺寸
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//注册函数每当窗口调整大小的时候调用这个函数
-
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     //初始化GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -28,8 +30,10 @@ int main()
     }
 
     glEnable(GL_DEPTH_TEST);
-    Shader shader("shaders/shader1.vtshader", "shaders/shader1.fshader");
 
+
+    Shader shader("shaders/shader1.vtshader", "shaders/shader1.fshader");
+   
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -125,10 +129,8 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(texturedata);
-    shader.use(); // don't forget to activate/use the shader before setting uniforms!
-    // either set it manually like so:
-    glUniform1i(glGetUniformLocation(shader.ID, "texture1"), 0);
-    // or set it via the texture class
+    shader.use(); 
+    shader.setInt("texture1", 0);
     shader.setInt("texture2", 1);
 
 
@@ -157,10 +159,11 @@ int main()
     //渲染循环
     while (!glfwWindowShouldClose(window))
     {
-        // input
-        // -----
         processInput(window);
 
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -172,21 +175,18 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture2);
         shader.use();
 
-        // create transformations
-        glm::mat4 model;
-        
-        glm::mat4 view;
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), float(SCR_WIDTH / SCR_HEIGHT), 0.1f, 100.0f);
-        shader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        // pass projection matrix to shader (note that in this case it could change every frame)
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        shader.setMat4("projection", projection);
+        // camera/view transformation
+        glm::mat4 view = camera.GetViewMatrix();
         shader.setMat4("view", view);
 
 
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
         {
-            glm::mat4 model;
+            glm::mat4 model = glm::mat4(1.0f);;
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
@@ -208,4 +208,48 @@ int main()
     //glDeleteProgram(shaderProgram);
     glfwTerminate();
     return 0;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camera.ProcessMouseScroll(static_cast<float>(yoffset));
+}
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
 }
