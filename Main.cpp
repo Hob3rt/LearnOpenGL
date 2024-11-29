@@ -202,11 +202,16 @@ int main()
         //glBindVertexArray(0);
         //[render for light box]
         shader_lightbox.use();
-        shader_lightbox.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        shader_lightbox.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        shader_lightbox.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+        shader_lightbox.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+        shader_lightbox.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        shader_lightbox.setFloat("material.shininess", 32.0f);
+        shader_lightbox.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+        shader_lightbox.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
+        shader_lightbox.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         shader_lightbox.setMat4("projection", projection);
         shader_lightbox.setMat4("view", view);
-        shader_lightbox.setVec3("lightPos", lightPos);
+        shader_lightbox.setVec3("light.position", lightPos);
         shader_lightbox.setVec3("viewPos", camera.Position);
         glm::mat4 model_light = glm::mat4(1.0f);
         shader_lightbox.setMat4("model", model_light);
