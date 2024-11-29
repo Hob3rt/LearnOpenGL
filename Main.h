@@ -8,8 +8,8 @@
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 #include "camera.h"
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 1000;
 
 
 

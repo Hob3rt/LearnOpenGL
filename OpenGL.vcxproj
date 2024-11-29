@@ -157,6 +157,9 @@
     <ClInclude Include="Main.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\light.vs" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
