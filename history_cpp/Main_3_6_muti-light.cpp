@@ -35,7 +35,7 @@ int main()
     Shader shader_boxes("shaders/shader1.vtshader", "shaders/shader1.fshader");
     Shader shader_box("shaders/box.vs", "shaders/box.fs");
     Shader shader_light("shaders/light.vs", "shaders/light.fs");
-   //
+    //
     float vertices[] = {
         // positions          // normals           // texture coords
        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
@@ -137,7 +137,7 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(texturedata);
-    shader_boxes.use(); 
+    shader_boxes.use();
     shader_boxes.setInt("texture1", 0);
     shader_boxes.setInt("texture2", 1);
 
@@ -273,7 +273,7 @@ int main()
 
         shader_box.setInt("material.diffuse", 2);
         shader_box.setInt("material.specular", 3);
-        
+
 
         shader_box.setMat4("projection", projection);
         shader_box.setMat4("view", view);
