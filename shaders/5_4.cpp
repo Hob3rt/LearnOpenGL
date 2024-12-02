@@ -178,7 +178,7 @@ int main()
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // don't forget to clear the stencil buffer!
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // don't forget to clear the stencil buffer!
 
         // set uniforms
         glm::mat4 model = glm::mat4(1.0f);
@@ -204,8 +204,8 @@ int main()
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        
-        
+
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
