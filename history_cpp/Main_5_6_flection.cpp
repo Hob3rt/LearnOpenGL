@@ -247,13 +247,13 @@ int main()
         // mirror box
         shader.use();
         model = glm::mat4(1.0f);
-        
+
         shader.setMat4("model", model);
         shader.setMat4("view", view);
         shader.setMat4("projection",
             projection);
         shader.setVec3("cameraPos", camera.Position);
-  
+
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
