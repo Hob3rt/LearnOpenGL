@@ -54,6 +54,7 @@ void Mesh::Draw(Shader shader)
     unsigned int specularNr = 1;
     unsigned int normalNr = 1;
     unsigned int heightNr = 1;
+    unsigned int reflectionNr = 1;
     for (unsigned int i = 0; i < textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i); // 在绑定之前激活相应的纹理单元
@@ -66,11 +67,14 @@ void Mesh::Draw(Shader shader)
             number = std::to_string(specularNr++);
         else if (name == "texture_normal")
             number = std::to_string(normalNr++); // transfer unsigned int to string
+        else if (name == "texture_reflection")
+            number = std::to_string(reflectionNr++); // transfer unsigned int to string
         else if (name == "texture_height")
-            number = std::to_string(heightNr++); // transfer unsigned int to string
+            number = std::to_string(heightNr++);
 
         shader.setInt(("material." + name + number).c_str(), i);
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
+        //std::cout << number << ":" << ("material." + name + number).c_str() << std::endl;
     }
     glActiveTexture(GL_TEXTURE0);
 

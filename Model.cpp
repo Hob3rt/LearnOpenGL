@@ -51,18 +51,34 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
         vertex.Position = vector;
-
-        vector.x = mesh->mNormals[i].x;
-        vector.y = mesh->mNormals[i].y;
-        vector.z = mesh->mNormals[i].z;
-        vertex.Normal = vector;
-
+        // normals
+        if (mesh->HasNormals())
+        {
+            vector.x = mesh->mNormals[i].x;
+            vector.y = mesh->mNormals[i].y;
+            vector.z = mesh->mNormals[i].z;
+            vertex.Normal = vector;
+        }
         if (mesh->mTextureCoords[0]) // 网格是否有纹理坐标？
         {
             glm::vec2 vec;
             vec.x = mesh->mTextureCoords[0][i].x;
             vec.y = mesh->mTextureCoords[0][i].y;
             vertex.TexCoords = vec;
+            // tangent
+            if (mesh->HasTangentsAndBitangents())
+            {
+                vector.x = mesh->mTangents[i].x;
+                vector.y = mesh->mTangents[i].y;
+                vector.z = mesh->mTangents[i].z;
+                vertex.Tangent = vector;
+                // bitangent
+                vector.x = mesh->mBitangents[i].x;
+                vector.y = mesh->mBitangents[i].y;
+                vector.z = mesh->mBitangents[i].z;
+                vertex.Bitangent = vector;
+           }
+            
         }
         else
             vertex.TexCoords = glm::vec2(0.0f, 0.0f);
@@ -87,6 +103,12 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
             vector<Texture> specularMaps = loadMaterialTextures(material,
                 aiTextureType_SPECULAR, "texture_specular");
             textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+            vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+            textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+            vector<Texture> reflectionMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_reflection");
+            textures.insert(textures.end(), reflectionMaps.begin(), reflectionMaps.end());
+            vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
+            textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
         }
 
     return Mesh(vertices, indices, textures);

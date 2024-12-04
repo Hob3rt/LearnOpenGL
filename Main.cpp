@@ -46,11 +46,13 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("shaders/5.6reflection.vs", "shaders/5.6reflection.fs");
+    Shader mirrorboxshader("shaders/5.6reflection.vs", "shaders/5.6refraction.fs");
     Shader skyboxShader("shaders/5.6skybox.vs", "shaders/5.6skybox.fs");
-    Shader box("shaders/woodbox.vs", "shaders/woodbox.fs");
-    Shader modelShader("shaders/5.6reflection.vs", "shaders/5.6reflection.fs");
-    Model Model("models/Nanosuit/nanosuit.obj");
+    Shader woodboxshader("shaders/woodbox.vs", "shaders/woodbox.fs");
+    Shader mirrorModelShader("shaders/5.6reflection.vs", "shaders/5.6reflection.fs");
+    Shader newModelShader("shaders/model_new.vs", "shaders/model_new.fs");
+
+    Model Model("resource/objects/nanosuit_reflection/nanosuit.obj");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float cubeVertices[] = {
@@ -162,7 +164,7 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    //wood box
+    //wood woodboxshader
     unsigned int woodVAO;
     glGenVertexArrays(1, &woodVAO);
     glBindVertexArray(woodVAO);
@@ -187,19 +189,29 @@ int main()
     };
     unsigned int skybox = loadCubemap(faces);
 
-    // shader configuration
+    // mirrorboxshader configuration
     // --------------------
-    shader.use();
-    shader.setInt("skybox", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, woodbox);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
+    //woodboxshader.use();
+    woodboxshader.setInt("texture1", 0);
 
-    box.use();
-    box.setInt("texture1", 0);
+    //mirrorboxshader.use();
+    mirrorboxshader.setInt("skybox", 1);
 
-    modelShader.use();
-    modelShader.setInt("skybox", 0);
+    //mirrorModelShader.use();
+    mirrorModelShader.setInt("skybox", 1);
+
+    newModelShader.use();
+    newModelShader.setInt("skybox", 1);
+    //newModelShader.setInt("skybox", 0);
 
     skyboxShader.use();
-    skyboxShader.setInt("skybox", 0);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
+    skyboxShader.setInt("skybox", 1);
 
     // render loop
     // -----------
@@ -220,39 +232,57 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //model
-        modelShader.use();
+        //model mirror
+        mirrorModelShader.use();
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -20.5f));
+        model = glm::translate(model, glm::vec3(0.0f, -10.0f, -20.5f));
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        modelShader.setMat4("model", model);
-        modelShader.setMat4("view", view);
-        modelShader.setMat4("projection", projection);
-        modelShader.setVec3("cameraPos", camera.Position);
-        Model.Draw(modelShader);
+        mirrorModelShader.setMat4("model", model);
+        mirrorModelShader.setMat4("view", view);
+        mirrorModelShader.setMat4("projection", projection);
+        mirrorModelShader.setVec3("cameraPos", camera.Position);
+        Model.Draw(mirrorModelShader);
+        //model glass
+        mirrorboxshader.use();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(10.0f, -10.0f, -20.5f));
+        mirrorboxshader.setMat4("model", model);
+        mirrorboxshader.setMat4("view", view);
+        mirrorboxshader.setMat4("projection", projection);
+        mirrorboxshader.setVec3("cameraPos", camera.Position);
+        Model.Draw(mirrorboxshader);
+        //new model
+        newModelShader.use();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-10.0f, -10.0f, -20.5f));
+        newModelShader.setMat4("model", model);
+        newModelShader.setMat4("view", view);
+        newModelShader.setMat4("projection",
+            projection);
+        newModelShader.setVec3("cameraPos", camera.Position);
+        Model.Draw(newModelShader);
 
-        //wood box
-        box.use();
+        //wood woodboxshader
+        woodboxshader.use();
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.5f));
-        box.setMat4("model", model);
-        box.setMat4("view", view);
-        box.setMat4("projection", projection);
+        woodboxshader.setMat4("model", model);
+        woodboxshader.setMat4("view", view);
+        woodboxshader.setMat4("projection", projection);
         glBindVertexArray(woodVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, woodbox);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
-        // mirror box
-        shader.use();
+        // mirror woodboxshader
+        mirrorboxshader.use();
         model = glm::mat4(1.0f);
-        
-        shader.setMat4("model", model);
-        shader.setMat4("view", view);
-        shader.setMat4("projection",
+        mirrorboxshader.setMat4("model", model);
+        mirrorboxshader.setMat4("view", view);
+        mirrorboxshader.setMat4("projection",
             projection);
-        shader.setVec3("cameraPos", camera.Position);
+        mirrorboxshader.setVec3("cameraPos", camera.Position);
   
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
@@ -260,6 +290,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
 
+        
         // draw skybox as last
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         skyboxShader.use();
