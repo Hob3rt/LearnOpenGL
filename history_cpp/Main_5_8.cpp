@@ -96,7 +96,7 @@ int main()
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f
     };
-    
+
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
@@ -106,7 +106,7 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    
+
     unsigned int uniformBlockIndexRed = glGetUniformBlockIndex(red_s.ID, "Matrices");
     unsigned int uniformBlockIndexGreen = glGetUniformBlockIndex(green_s.ID, "Matrices");
     unsigned int uniformBlockIndexBlue = glGetUniformBlockIndex(blue_s.ID, "Matrices");
@@ -180,7 +180,7 @@ int main()
         model = glm::translate(model, glm::vec3(-0.75f, -0.75f, 0.0f)); // move bottom-left
         yellow_s.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
