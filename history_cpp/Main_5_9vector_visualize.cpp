@@ -99,7 +99,7 @@ int main()
      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // 右下
     -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // 左下
     };
-    
+
     // cube VAO
     //unsigned int cubeVAO, cubeVBO;
     //glGenVertexArrays(1, &cubeVAO);
@@ -121,7 +121,7 @@ int main()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnable(GL_CULL_FACE);
-   
+
 
     // render loop
     // -----------
@@ -163,7 +163,7 @@ int main()
 
 
 
-        
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
