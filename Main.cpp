@@ -1,6 +1,4 @@
 #include "Main.h"
-
-
 int main()
 {
     // glfw: initialize and configure
