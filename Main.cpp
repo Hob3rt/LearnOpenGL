@@ -22,12 +22,28 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;   
+
+
+
+
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+        // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
+    ImGui_ImplOpenGL3_Init();
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -131,11 +147,19 @@ int main()
         // -----
         processInput(window);
 
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow(); // Show demo window! :)
+        Ui::show_window_info();
+        Ui::show_camera_info(camera);
+
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        updateWindowTitleWithFPS(window, deltaTime);
+        //updateWindowTitleWithFPS(window, deltaTime);
 
         // configure transformation matrices
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
@@ -168,10 +192,18 @@ int main()
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
+        // Rendering
+// (Your code clears your framebuffer, renders your other stuff etc.)
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // (Your code calls glfwSwapBuffers() etc.)
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwTerminate();
     return 0;
 }
@@ -183,6 +215,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
+    if (!(ImGui::GetIO().WantCaptureKeyboard == 0 && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS))
+    {
+        if (!firstMouse)
+        {
+            firstMouse = true;
+        }
+        return;
+    }
+        
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
@@ -209,6 +250,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
+    if (ImGui::GetIO().WantCaptureKeyboard != 0)
+        return;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -219,6 +262,8 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+        
+    
 }
 // utility function for loading a 2D texture from file
 // ---------------------------------------------------
